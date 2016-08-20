@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom';
 import math from 'mathjs';
 import _ from 'lodash';
 
-var numsAndCtrls = [
+const numsAndCtrls = [
     [{ name: 'C', value: 'clean' }, { name: '1' }, { name: '4' }, { name: '7' }],
-    [{ name: 'rad/deg' }, { name: '2' }, { name: '5' }, { name: '8' }],
-    [{ name: '' }, { name: '3' }, { name: '6' }, { name: '9' }],
+    [{ name: 'CE', value: 'clear everything' }, { name: '2' }, { name: '5' }, { name: '8' }],
+    [{ name: 'rad/deg' }, { name: '3' }, { name: '6' }, { name: '9' }],
     [{ name: '<i class="fa fa-arrow-circle-left"></i>', value: 'backspace' },
      { name: '&#177;', value: 'plus-minus' }, { name: '.' }, { name: '0' }]
 ];
 
-var operAndConst = [
+const operAndConst = [
     [{ name: 'ln' }, { name: 'lg' }, { name: 'lb' }, { name: 'log<sub>y</sub>x', value: 'log' }],
     [{ name: '&#8730;x', value: 'sqrt' }, { name: '<sup>y</sup>&#8730;x', value: 'root' },
      { name: 'x!', value: 'fact' }, { name: '1/x', value: 'fract' }],
@@ -22,7 +22,7 @@ var operAndConst = [
     [{ name: '+' }, { name: '-' }, { name: '&#215;', value: '*' }, { name: '&#247;', value: '/'}]
 ];
 
-var trigFuncs = [
+const trigFuncs = [
     [{ name: 'sin' }, { name: 'asin' }, { name: 'sinh' }, { name: 'asinh' }],
     [{ name: 'cos' }, { name: 'acos' }, { name: 'cosh' }, { name: 'acosh' }],
     [{ name: 'tan' }, { name: 'atan' }, { name: 'tanh' }, { name: 'atanh' }],
@@ -46,7 +46,8 @@ var Calculate = React.createClass({
 	propTypes: {
 		numsAndCtrls: React.PropTypes.arrayOf(React.PropTypes.array).isRequired,	
 		operAndConst: React.PropTypes.arrayOf(React.PropTypes.array).isRequired,
-		trigFuncs: React.PropTypes.arrayOf(React.PropTypes.array).isRequired
+		trigFuncs: React.PropTypes.arrayOf(React.PropTypes.array).isRequired,
+		keyPressed: React.PropTypes.string.isRequired
 	},
 	getInitialState: function() {
 		return {
@@ -56,8 +57,85 @@ var Calculate = React.createClass({
 			input: '',
 			binaryCalcFromExp: false,
 			isDeg: false,
+			wasEdited: false,
 			prevFunc: ''
 		};
+	},
+	scrollDown: function() {
+		// let out = document.getElementById('results');
+		// //results.scrollTop = results.scrollHeight;
+		// let isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+		// if(isScrolledToBottom) {
+		// 	out.scrollTop = out.scrollHeight - out.clientHeight;
+		// }
+
+		setInterval(function() {
+			var elem = document.getElementById('results');
+  			elem.scrollTop = elem.scrollHeight;
+		}, 500);
+	},
+	answerClick: function(index) {
+		let oldResult = this.state.results[index];
+		this.setState({
+			input: oldResult.result,
+			expression: oldResult.expression
+		});
+	},
+	expClick: function(index) {
+		
+	},
+	componentWillReceiveProps: function(nextProps) {
+		console.log('key: ' + nextProps.keyPressed);
+		this.keyHandler(nextProps.keyPressed);
+	},
+	keyHandler: function(key) {
+		key = key.toLowerCase();
+		switch(key) {
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '0':
+			case '.':
+			case '+':
+			case '-':
+			case '*':
+			case '/':
+			case 'backspace':
+			case 'e':
+				this.handler(key);
+				break;
+			case '%':
+				this.handler('perc');
+				break;
+			case '!':
+				this.handler('fact');
+				break;
+			case '^':
+				this.handler('power');
+				break;
+			case 'c':
+				this.handler('clean');
+				break;
+			case 'escape':
+				this.handler('clean everything');
+				break;
+			case 'p':
+				this.handler('pi');
+				break;
+			case '=':
+			case 'enter':
+			case ' ':
+				this.equalHandler();
+				break;
+			default:
+				break;				
+		}
 	},
 	equalHandler: function() {
 	
@@ -73,10 +151,10 @@ var Calculate = React.createClass({
 			case 'log':
 				if (!this.state.binaryCalcFromExp) {
 					var leftOperand = this.state.expression.match(/<sub>(.*?)<\/sub>/g)[0].replace(/<\/?sub>/g, '');
-					tmpRes = math.log(math.bignumber(this.state.input), math.bignumber(leftOperand)).toString();
+					tmpRes = math.log(math.number(this.state.input), math.number(leftOperand)).toString();
 				}
 				else {
-					tmpRes = math.log(math.bignumber(this.state.input), math.bignumber(tmpResults[tmpResults.length - 2].result)).toString();
+					tmpRes = math.log(math.number(this.state.input), math.number(tmpResults[tmpResults.length - 2].result)).toString();
 				}
 				tmpExp = this.state.expression + this.state.input;
 				break;
@@ -84,11 +162,11 @@ var Calculate = React.createClass({
 			case 'power':
 				var leftOperand = this.state.expression.slice(0, -2); 		
 				if (!this.state.binaryCalcFromExp) {
-					tmpRes = math.pow(math.bignumber(leftOperand), math.bignumber(this.state.input)).toString();
+					tmpRes = math.pow(math.number(leftOperand), math.number(this.state.input)).toString();
 					tmpExp = leftOperand + '<sup>' + this.state.input + '</sup>';
 				}
 				else {
-					tmpRes = math.pow(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input)).toString();
+					tmpRes = math.pow(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input)).toString();
 					tmpExp = '(' + leftOperand + ')' + '<sup>' + this.state.input + '</sup>';
 				}
 				break;
@@ -96,10 +174,10 @@ var Calculate = React.createClass({
 			case 'root':
 				if (!this.state.binaryCalcFromExp) {
 					var leftOperand = this.state.expression.match(/<sup>(.*?)<\/sup>/g)[0].replace(/<\/?sup>/g, '');
-					tmpRes = math.nthRoot(math.bignumber(this.state.input), math.bignumber(leftOperand)).toString();
+					tmpRes = math.nthRoot(math.number(this.state.input), math.number(leftOperand)).toString();
 				}
 				else {
-					tmpRes = math.nthRoot(math.bignumber(this.state.input), math.bignumber(tmpResults[tmpResults.length - 2].result)).toString();
+					tmpRes = math.nthRoot(math.number(this.state.input), math.number(tmpResults[tmpResults.length - 2].result)).toString();
 				}
 				tmpExp = this.state.expression + this.state.input;
 				break;
@@ -107,11 +185,11 @@ var Calculate = React.createClass({
 			case 'mod': 		
 				var leftOperand = this.state.expression.slice(0, -5);
 				if (!this.state.binaryCalcFromExp) {
-					tmpRes = math.mod(math.bignumber(leftOperand), math.bignumber(this.state.input)).toString();
+					tmpRes = math.mod(math.number(leftOperand), math.number(this.state.input)).toString();
 					tmpExp = this.state.expression + this.state.input;
 				}
 				else {
-					tmpRes = math.mod(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input)).toString();
+					tmpRes = math.mod(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input)).toString();
 					tmpExp = '(' + leftOperand + ') mod ' + this.state.input;
 				}
 				break;
@@ -119,11 +197,11 @@ var Calculate = React.createClass({
 			case 'div': 		
 				var leftOperand = this.state.expression.slice(0, -5);
 				if (!this.state.binaryCalcFromExp) {
-					tmpRes = math.floor(math.divide(math.bignumber(leftOperand), math.bignumber(this.state.input))).toString();
+					tmpRes = math.floor(math.divide(math.number(leftOperand), math.number(this.state.input))).toString();
 					tmpExp = this.state.expression + this.state.input;
 				}
 				else {
-					tmpRes = math.floor(math.divide(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input))).toString();
+					tmpRes = math.floor(math.divide(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input))).toString();
 					tmpExp = '(' + leftOperand + ') div ' + this.state.input;
 				}
 				break;
@@ -131,10 +209,10 @@ var Calculate = React.createClass({
 			case '+': 		
 				if (!this.state.binaryCalcFromExp) {
 					var leftOperand = this.state.expression.slice(0, -3);
-					tmpRes = math.add(math.bignumber(leftOperand), math.bignumber(this.state.input)).toString();
+					tmpRes = math.add(math.number(leftOperand), math.number(this.state.input)).toString();
 				}
 				else {
-					tmpRes = math.add(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input)).toString();
+					tmpRes = math.add(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input)).toString();
 				}
 				tmpExp = this.state.expression + this.state.input;
 				break;
@@ -142,10 +220,10 @@ var Calculate = React.createClass({
 			case '-': 		
 				if (!this.state.binaryCalcFromExp) {
 					var leftOperand = this.state.expression.slice(0, -3);
-					tmpRes = math.subtract(math.bignumber(leftOperand), math.bignumber(this.state.input)).toString();
+					tmpRes = math.subtract(math.number(leftOperand), math.number(this.state.input)).toString();
 				}
 				else {
-					tmpRes = math.subtract(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input)).toString();
+					tmpRes = math.subtract(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input)).toString();
 				}
 				tmpExp = this.state.expression + this.state.input;
 				break;
@@ -153,11 +231,11 @@ var Calculate = React.createClass({
 			case '*':
 				var leftOperand = this.state.expression.slice(0, -3); 		
 				if (!this.state.binaryCalcFromExp) {
-					tmpRes = math.multiply(math.bignumber(leftOperand), math.bignumber(this.state.input)).toString();
+					tmpRes = math.multiply(math.number(leftOperand), math.number(this.state.input)).toString();
 					tmpExp = this.state.expression + this.state.input;
 				}
 				else {
-					tmpRes = math.multiply(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input)).toString();
+					tmpRes = math.multiply(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input)).toString();
 					tmpExp = '(' + leftOperand + ') * ' + this.state.input;
 				}
 				break;
@@ -165,11 +243,11 @@ var Calculate = React.createClass({
 			case '/':
 				var leftOperand = this.state.expression.slice(0, -3); 		
 				if (!this.state.binaryCalcFromExp) {
-					tmpRes = math.divide(math.bignumber(leftOperand), math.bignumber(this.state.input)).toString();
+					tmpRes = math.divide(math.number(leftOperand), math.number(this.state.input)).toString();
 					tmpExp = this.state.expression + this.state.input;
 				}
 				else {
-					tmpRes = math.divide(math.bignumber(tmpResults[tmpResults.length - 2].result), math.bignumber(this.state.input)).toString();
+					tmpRes = math.divide(math.number(tmpResults[tmpResults.length - 2].result), math.number(this.state.input)).toString();
 					tmpExp = '(' + leftOperand + ') / ' + this.state.input;
 				}
 				break;
@@ -305,12 +383,12 @@ var Calculate = React.createClass({
 					expFromExp = function (str) { return func + '(' + str + ')'; };
 				}
 				else {
-					expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + '&deg;)'; };
+					expFromInput = function (str) {	return func + '(' + math.number(str).toString() + '&deg;)'; };
 					calculateRes = function (str) {	
-						return math[func](math.divide(math.multiply(math.bignumber(str), math.bignumber(math.pi)), math.bignumber('180'))).toString(); 
+						return math[func](math.divide(math.multiply(math.number(str), math.number(math.pi)), math.number('180'))).toString(); 
 					};
 					expFromExp = function (str) { return func + '(' + str + '&deg;)'; };
-				}
+				} 
 
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
@@ -319,30 +397,30 @@ var Calculate = React.createClass({
 			case 'round':
 			case 'ceil':
 			case 'floor':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math[func](math.bignumber(str)).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math[func](math.number(str)).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
  			
  			//logarithmic----------------------------------------------------------------------------
 			case 'ln':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.log(math.bignumber(str), math.e).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.log(math.number(str), math.e).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
 
 			case 'lg':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.log(math.bignumber(str), math.bignumber('10')).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.log(math.number(str), math.number('10')).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
 
 			case 'lb':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.log(math.bignumber(str), math.bignumber('2')).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.log(math.number(str), math.number('2')).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
@@ -354,8 +432,8 @@ var Calculate = React.createClass({
 
 			//nonlinear------------------------------------------------------------------------------
 			case 'sqr':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.pow(math.bignumber(str), math.bignumber('2')).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.pow(math.number(str), math.number('2')).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
@@ -366,15 +444,15 @@ var Calculate = React.createClass({
 				break;
 
 			case 'exp':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.pow(math.bignumber(math.e), math.bignumber(str)).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.pow(math.number(math.e), math.number(str)).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
 
 			case 'sqrt':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.sqrt(math.bignumber(str)).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.sqrt(math.number(str)).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
@@ -385,15 +463,15 @@ var Calculate = React.createClass({
 				break;
 
 			case 'fact':
-				var expFromInput = function (str) {	return math.bignumber(str).toString() + '!'; };
-				var calculateRes = function (str) {	return math.factorial(math.bignumber(str)).toString(); };
+				var expFromInput = function (str) {	return math.number(str).toString() + '!'; };
+				var calculateRes = function (str) {	return math.factorial(math.number(str)).toString(); };
 				var expFromExp = function (str) { return str + '!'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
 
 			case 'fract':
-				var expFromInput = function (str) {	return '1/(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.divide(math.bignumber('1'), math.bignumber(str)).toString(); };
+				var expFromInput = function (str) {	return '1/(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.divide(math.number('1'), math.number(str)).toString(); };
 				var expFromExp = function (str) { return '1/(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
@@ -411,8 +489,8 @@ var Calculate = React.createClass({
 				break;
 
 			case 'abs':
-				var expFromInput = function (str) {	return func + '(' + math.bignumber(str).toString() + ')'; };
-				var calculateRes = function (str) {	return math.abs(math.bignumber(str)).toString(); };
+				var expFromInput = function (str) {	return func + '(' + math.number(str).toString() + ')'; };
+				var calculateRes = function (str) {	return math.abs(math.number(str)).toString(); };
 				var expFromExp = function (str) { return func + '(' + str + ')'; };
 				this.unary(expFromInput, calculateRes, expFromExp);
 				break;
@@ -470,7 +548,7 @@ var Calculate = React.createClass({
 				break;
 
 			case 'plus-minus':
-				var tmp = math.bignumber(this.state.input * -1).toString();
+				var tmp = math.number(this.state.input * -1).toString();
 				this.setState({ input: tmp });
 				break;
 
@@ -485,7 +563,7 @@ var Calculate = React.createClass({
 			case '8':
 			case '9':
 				var tmp = this.state.input + func;
-				tmp = math.bignumber(tmp).toString();
+				tmp = math.number(tmp).toString();
 				this.setState({	input: tmp });
 				break;
 			case '0':
@@ -495,7 +573,7 @@ var Calculate = React.createClass({
 				} 
 				else {
 					var tmp = this.state.input + func;
-					tmp = math.bignumber(tmp).toString();
+					tmp = math.number(tmp).toString();
 					this.setState({ input: tmp });
 				}
 				break;
@@ -515,6 +593,9 @@ var Calculate = React.createClass({
 				input: ''
 			});
 		}
+
+		//scroll list of results to the bottom---------------------------------------------------------------------
+		//this.scrollDown();
 	},
 	render: function() {
 		var numsAndCtrls = this.props.numsAndCtrls;
@@ -537,7 +618,7 @@ var Calculate = React.createClass({
 							return <li key={ j } 
 						    	       dangerouslySetInnerHTML={ { __html: item.name } }
 						        	   value={ item.value || item.name }
-						               onClick={ () => this.handler(item.value || item.name) } ></li>
+						               onClick={ () => this.handler(item.value || item.name) }></li>
 						}
 					}, this) }
 				</ul>
@@ -547,15 +628,16 @@ var Calculate = React.createClass({
 		return (
 			<div>
 				<section id="display">
-					<div className="results">
+					<div className="results" id="results">
 						{ this.state.results.map(function (item, index) {
-
 							return <div key={ index } className="result">
 										<div className="expression" 
 										     dangerouslySetInnerHTML={ { __html: item.expression } }
-										     value={ item.expression }></div>
+										     value={ item.expression }
+										     onClick={ () => expClick(index) }></div>
 										<div className="equal">=</div>
-										<div className="answer">{ item.result }</div>
+										<div className="answer"
+										     onClick={ () => this.answerClick(index) }>{ item.result }</div>
 							   		</div>
 						}, this) }
 					</div>
@@ -565,7 +647,7 @@ var Calculate = React.createClass({
 					</div>
 				</section>
 				<section id="operations">
-					<div className="oper">
+					<div className="oper"> 
 						{ btnTemplate }
 					</div>
 				</section>
@@ -601,7 +683,7 @@ var Footer = React.createClass({
             	</div>
 
             	<div className="mark">
-                	<span>2016 made by</span>
+                	<span>{ new Date().getFullYear() } made by</span>
                 	<span className="author">ashtrie</span>
             	</div>
         	</footer>
@@ -609,22 +691,27 @@ var Footer = React.createClass({
 	}
 });
 
-
 var App = React.createClass({
+	getInitialState: function() {
+		return {
+			key: ''
+		};
+	},
+	keyHandler: function(event) {
+		this.setState({ key: event.key })
+	},
+	componentDidMount: function() {
+  		ReactDOM.findDOMNode(this.refs.page).focus(); 
+	},
 	render: function() {
 		return (
-			<div className="app">
+			<div className="app" ref="page" tabIndex="0" onKeyDown={ this.keyHandler }>
 				<Header/>
-				<Calculate numsAndCtrls={ numsAndCtrls } 
-					 	   operAndConst={ operAndConst } 
-						   trigFuncs={ trigFuncs }/>
+				<Calculate numsAndCtrls={ numsAndCtrls } operAndConst={ operAndConst } trigFuncs={ trigFuncs } keyPressed={ this.state.key } />
 				<Footer/>
 			</div>
 		);
 	}
 });
 
-ReactDOM.render(
-  <App/>,
-  document.getElementById('root')
-);
+ReactDOM.render(<App/>, document.getElementById('root'));

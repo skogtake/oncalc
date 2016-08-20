@@ -35,6 +35,7 @@
     "babel-core": "~6.9.1"
   },
   "devDependencies": {
-    "concurrently": "~2.1.0"
+    "concurrently": "~2.1.0",
+    "mathjs": "^3.4.1"
   }
 }

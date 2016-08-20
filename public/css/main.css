@@ -27,6 +27,14 @@ section {
     margin: 0px 0px 0px 0px;
 }
 
+/*the whole page
+*/
+.app:focus {
+    outline: none;
+}
+
+/*display and buttons' sections
+*/
 #display {
     height: 250px;
     text-align: center;
@@ -165,6 +173,8 @@ section {
     font-weight: 100;
 }
 
+/*footer elements
+*/
 footer {
     padding: 10px 50px 10px 50px;
     text-align: center;
@@ -212,7 +222,8 @@ footer .mark .author {
     margin-left: 5px;
 }
 
-
+/*rad/deg transition
+*/
 .tgl {
    display: none;
 }
@@ -260,16 +271,8 @@ footer .mark .author {
     content: attr(data-tg-off);
 }
 
-.tgl-skewed + .tgl-btn:active {
-    
-}
-
 .tgl-skewed + .tgl-btn:active:before {
     left: -10%;
-}
-
-.tgl-skewed:checked + .tgl-btn {
-    
 }
 
 .tgl-skewed:checked + .tgl-btn:before {
