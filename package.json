@@ -1,7 +1,7 @@
 {
-  "name": "react-for-beginners",
+  "name": "oncalc",
   "version": "1.0.0",
-  "description": "",
+  "description": "online calculator",
   "main": "index.js",
   "scripts": {
     "webpack-watch": "./node_modules/webpack/bin/webpack.js -w",
@@ -11,15 +11,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/viatsko/react-for-beginners.git"
+    "url": "git+https://github.com/ashtrie/oncalc.git"
   },
-  "author": "Valerii Iatsko <dwr@codingbox.io>",
+  "author": "ashtrie <aleksandersher@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/viatsko/react-for-beginners/issues"
+    "url": "https://github.com/ashtrie/oncalc/issues"
   },
-  "homepage": "https://github.com/viatsko/react-for-beginners#readme",
+  "homepage": "https://github.com/ashtrie/oncalc#readme",
   "dependencies": {
+    "babel-core": "~6.9.1",
     "babel-loader": "~6.2.4",
     "babel-plugin-transform-class-properties": "~6.9.1",
     "babel-plugin-transform-runtime": "~6.9.0",
@@ -31,11 +32,15 @@
     "express": "~4.13.4",
     "react": "~0.14.8",
     "react-dom": "~0.14.8",
-    "webpack": "~1.13.1",
-    "babel-core": "~6.9.1"
+    "react-tap-event-plugin": "^0.2.2",
+    "webpack": "~1.13.1"
   },
   "devDependencies": {
     "concurrently": "~2.1.0",
-    "mathjs": "^3.4.1"
+    "material-design-icons": "^2.2.3",
+    "material-ui": "^0.15.4",
+    "mathjs": "^3.4.1",
+    "react-addons-css-transition-group": "^15.3.1",
+    "react-tap-event-plugin": "^1.0.0"
   }
 }
