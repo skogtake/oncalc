@@ -1,0 +1,34 @@
+@font-face {
+    font-family: big;
+    src: url('../assets/fonts/BigJohn.otf');
+}
+
+@font-face {
+    font-family: slim;
+    src: url('../assets/fonts/SlimJoe.otf');
+}
+
+@font-face {
+    font-family: grotesk;
+    src: url('../assets/fonts/HKGrotesk-Regular.otf');
+}
+
+@font-face {
+    font-family: pier-regular;
+    src: url('../assets/fonts/pier-regular.otf');
+}
+
+@font-face {
+    font-family: SourceSansPro-Light;
+    src: url('../assets/fonts/SourceSansPro-Light.otf');
+}
+
+@font-face {
+    font-family: SourceSansPro-Regular;
+    src: url('../assets/fonts/SourceSansPro-Regular.otf');
+}
+
+@font-face {
+    font-family: Against;
+    src: url('../assets/fonts/againts.otf');
+}

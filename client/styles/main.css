@@ -1,0 +1,34 @@
+@import './normalize.css';
+@import './animate.css';
+@import './fonts.css';
+
+/*
+header {
+    padding: 10px 0px 10px 50px;
+    font-size: 30px;
+    color: #fff;
+
+    background-image: url('../pic/redcrystals.png');
+    background-size: 100%;
+}
+header span.title{
+    font-family: big;
+}
+
+header span.description {
+    font-family: slim;
+}*/
+
+body {
+    font-family: SourceSansPro-Light;
+
+    background-color: #565656;
+    /*background-image: url(../pic/load.gif);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;*/
+}
+
+section {
+    margin: 0px 0px 0px 0px;
+}

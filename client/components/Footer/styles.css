@@ -1,0 +1,46 @@
+footer {
+    padding: 10px 50px 10px 50px;
+    text-align: center;
+    color: #969696;
+}
+
+footer .social div {
+    margin-bottom: 10px;
+}
+
+footer .social div .title {
+    font-family: big;
+}
+
+footer .social a:link {
+    text-decoration: none;
+    font-size: 10%;
+    color: #969696;
+}
+
+footer .social a:hover {
+    color: #e73241;
+}
+
+footer .social a:active {
+    color: #a02154;
+}
+
+footer .social a:visited {
+    color: #969696;
+}
+
+footer .social i.inverse {
+    color: #565656;
+}
+
+footer .mark {
+    margin-top: 5px;
+    font-size: 80%;
+}
+
+footer .mark .author {
+    font-family: Against;
+    font-size: 200%;
+    margin-left: 5px;
+}

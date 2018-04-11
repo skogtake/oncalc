@@ -1,0 +1,16 @@
+.app-bar {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+
+    background-image: url('../../assets/images/redcrystals.png') !important;
+    background-size: 100% !important;
+}
+
+.app-bar .title{
+    padding-left: 10px; 
+    font-family: big;
+}
+
+.app-bar .description {
+    font-family: slim;
+}
