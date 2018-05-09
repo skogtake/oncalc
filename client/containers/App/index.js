@@ -22,6 +22,11 @@ const theme = getMuiTheme({
 });
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        this.page = React.createRef();
+    }
+
     state = {
         key: '',
     };
@@ -40,9 +45,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={ theme }>
                 <div
                     styleName="app"
-                    ref={ page => {
-                        this.page = page;
-                    } }
+                    ref={ this.page }
                     tabIndex="0"
                     onKeyDown={ this.keyHandler }
                 >

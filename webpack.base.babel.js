@@ -2,10 +2,10 @@ import path from 'path';
 
 const baseConfig = {
     context: path.resolve(__dirname, 'client'),
-    entry: ['./index.js'],
+    entry: ['babel-polyfill', './index.js'],
     output: {
-        path: path.join(__dirname, '/public'),
-        filename: 'bundle.js',
+        path: path.join(__dirname, 'public'),
+        filename: './bundle.js',
     },
     watchOptions: {
         poll: true,
